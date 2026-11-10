@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="FF-CRPG"
+run/main_scene="uid://bidp4t4t0tvhv"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -18,6 +19,7 @@ config/icon="res://icon.svg"
 
 Switchboard_auto="*res://addons/gdeng/daLoneDrau-GDEng-ECS/services/switchboard.gd"
 DiceTower_auto="*res://addons/gdeng/daLoneDrau-GDEng-ECS/services/dice_tower.gd"
+FFEngine_auto="*res://game/engine/ff_engine.gd"
 
 [display]
 

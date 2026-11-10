@@ -32,12 +32,12 @@ enum Item { NEW_GAME, CONTINUE, SETTINGS }
 @export var auto_fit: bool = true
 @export var fit_size: Vector3 = Vector3(8.0, 2.2, 3.0)
 
-@onready var _screen: Control = $Screen
-@onready var _footer: Label = $Screen/Footer
-@onready var _placeholder: Control = $Screen/StageFrame/StagePlaceholder
-@onready var _anchor: Node3D = $Screen/StageFrame/StageContainer/StageViewport/StageAnchor
-@onready var _gate: Label = $Screen/MenuFrame/GatePrompt
-@onready var _menu: Control = $Screen/MenuFrame/MenuList
+@onready var _screen: Control = %Screen
+@onready var _footer: Label = %Footer
+@onready var _placeholder: Control = %StagePlaceholder
+@onready var _anchor: Node3D = %StageAnchor
+@onready var _gate: Label = %GatePrompt
+@onready var _menu: Control = %MenuList
 
 var _state: State = State.GATE
 var _cursor: int = Item.NEW_GAME

@@ -6,10 +6,14 @@
 .nomedia
 
 # Godot-specific ignores
-.import/
+.idea/
+/android/
+*.uid
+*.import
+/build/
+export_presets.cfg
 export.cfg
 export_credentials.cfg
-*.tmp
 
 # Imported translations (automatically generated from CSV files)
 *.translation

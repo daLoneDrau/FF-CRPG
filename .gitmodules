@@ -1,3 +1,6 @@
 [submodule "addons/daLoneDrau-GDEng-ECS"]
 	path = addons/daLoneDrau-GDEng-ECS
 	url = git@github.com:daLoneDrau/daLoneDrau-GDEng-ECS
+[submodule "addons/gdeng/daLoneDrau-GDEng-ECS"]
+	path = addons/gdeng/daLoneDrau-GDEng-ECS
+	url = git@github.com:daLoneDrau/daLoneDrau-GDEng-ECS

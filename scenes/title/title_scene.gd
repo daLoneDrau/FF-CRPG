@@ -14,6 +14,7 @@ signal settings_requested
 ## Scene keys the Title hands off to. Each must be registered with GameEngine
 ## (register_scene) before its menu item works; until then the footer says so.
 const SCENE_NEW_GAME := "character_creation"
+const PATH_NEW_GAME := "res://scenes/character_creation/character_creation.tscn"
 const SCENE_CONTINUE := "slot_select"
 const SCENE_SETTINGS := "settings"
 
@@ -197,23 +198,27 @@ func _activate(item: int) -> void:
 				_flash("ALL SLOTS FULL - DELETE ONE FIRST")
 				return
 			new_game_requested.emit()
-			_go(SCENE_NEW_GAME)
+			_go(SCENE_NEW_GAME, PATH_NEW_GAME)
 		Item.CONTINUE:
 			continue_requested.emit()
 			_go(SCENE_CONTINUE)
 		Item.SETTINGS:
 			settings_requested.emit()
-			_go(SCENE_SETTINGS, true)
+			_go(SCENE_SETTINGS, "", true)
 
 
-func _go(scene_key: String, as_overlay: bool = false) -> void:
-	if _game_engine == null or not _game_engine.scenes.has(scene_key):
+## Asks the engine to load scene_key. If scene_path is given, the engine
+## registers the key on first use; otherwise the key must already be registered.
+func _go(scene_key: String, scene_path: String = "", as_overlay: bool = false) -> void:
+	var known := ResourceLoader.exists(scene_path) if scene_path != "" \
+		else (_game_engine != null and _game_engine.scenes.has(scene_key))
+	if _game_engine == null or not known:
 		_flash("NOT BUILT YET")
 		return
 	if as_overlay:
-		_game_engine.push_scene(scene_key)
+		_game_engine.push_scene(scene_key, scene_path)
 	else:
-		_game_engine.change_scene(scene_key)
+		_game_engine.change_scene(scene_key, scene_path)
 
 
 ## Shows a message in the footer line, then restores the tagline.

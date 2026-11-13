@@ -18,7 +18,7 @@ extends Scene
 ## Accept hands the rolled stats and the chosen potion id, as one Dictionary, to
 ## whoever listens on `accepted`, then moves on to the Prologue. The view does not build entities or
 ## write saves. CharacterCreationSystem, added in on_enter(), listens through the
-## Switchboard and creates the adventurer.
+## Switchboard, creates the adventurer and equips the starting items.
 
 ## Emitted on Accept with
 ## {"skill": int, "stamina": int, "luck": int,
@@ -71,8 +71,15 @@ func on_enter() -> void:
 	_refresh_potions()
 	_refresh_accept()
 
-	# CharacterCreationSystem listens for `accepted` and creates the adventurer.
+	# FFScriptSystem runs entity scripts. CharacterCreationSystem listens for `accepted`,
+	# creates the adventurer and equips its items through FFEquipmentSystem.
 	Switchboard_auto.add_node_broadcaster(self, "accepted")
+	var scripts := FFScriptSystem.new()
+	add_child(scripts)
+	register_system(scripts)
+	var equipment := FFEquipmentSystem.new()
+	add_child(equipment)
+	register_system(equipment)
 	var system := CharacterCreationSystem.new()
 	add_child(system)
 	register_system(system)
@@ -185,7 +192,7 @@ func _accept() -> void:
 		"stamina_dice": _stamina.dice,
 		"luck_dice": _luck.dice,
 		"potion": _columns[_selected].potion_id,
-		})
+	})
 	if not ResourceLoader.exists(PROLOGUE_PATH):
 		_flash("PROLOGUE NOT BUILT YET")
 		return

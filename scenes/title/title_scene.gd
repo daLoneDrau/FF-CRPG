@@ -50,7 +50,7 @@ enum Item { NEW_GAME, CONTINUE, SETTINGS }
 @onready var _placeholder: Control = %StagePlaceholder
 @onready var _anchor: Node3D = %StageAnchor
 @onready var _camera: Camera3D = %StageCamera
-@onready var _gate: Label = %GatePrompt
+@onready var _gate: PanelContainer = %GatePrompt
 @onready var _menu: Control = %MenuList
 
 var _state: State = State.GATE

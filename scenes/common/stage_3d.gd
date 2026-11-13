@@ -92,10 +92,10 @@ func tint_node(node_name: StringName, color: Color) -> void:
 		push_warning("Stage3D: no mesh node named %s." % node_name)
 		return
 	for i in mesh.get_surface_override_material_count():
-		var material := mesh.get_active_material(i) as StandardMaterial3D
-		if material == null:
+		var mesh_material := mesh.get_active_material(i) as StandardMaterial3D
+		if mesh_material == null:
 			continue
-		var copy := material.duplicate() as StandardMaterial3D
+		var copy := mesh_material.duplicate() as StandardMaterial3D
 		copy.emission_enabled = true
 		copy.emission = color
 		mesh.set_surface_override_material(i, copy)

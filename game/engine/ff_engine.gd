@@ -16,7 +16,8 @@ func _ready() -> void:
 
 
 func _initialize_systems() -> void:
-	pass
+	entity_manager = FFEntityManager.new()
+	add_child(entity_manager)
 
 
 func _setup_window() -> void:

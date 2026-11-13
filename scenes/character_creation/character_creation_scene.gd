@@ -17,7 +17,8 @@ extends Scene
 ##
 ## Accept hands the rolled stats and the chosen potion id, as one Dictionary, to
 ## whoever listens on `accepted`, then moves on to the Prologue. The view does not build entities or
-## write saves; that belongs to the data model, not to this screen.
+## write saves. CharacterCreationSystem, added in on_enter(), listens through the
+## Switchboard and creates the adventurer.
 
 ## Emitted on Accept with
 ## {"skill": int, "stamina": int, "luck": int,
@@ -70,10 +71,17 @@ func on_enter() -> void:
 	_refresh_potions()
 	_refresh_accept()
 
+	# CharacterCreationSystem listens for `accepted` and creates the adventurer.
+	Switchboard_auto.add_node_broadcaster(self, "accepted")
+	var system := CharacterCreationSystem.new()
+	add_child(system)
+	register_system(system)
+
 	_roll()
 
 
 func on_exit() -> void:
+	Switchboard_auto.remove_node_broadcaster(self, "accepted")
 	if _flash_tween:
 		_flash_tween.kill()
 

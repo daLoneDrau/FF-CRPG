@@ -2,9 +2,107 @@
 
 [ext_resource type="FontFile" uid="uid://cj4v1nj2q1oir" path="res://assets/fonts/PrintChar21.ttf" id="1_5k2lq"]
 
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_5tknm"]
+color = Color(0.105882, 0.101961, 0.090196, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5k2lq"]
+content_margin_top = 4.0
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.470588, 0.439216, 0.376471, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5k2lq"]
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.643137, 0.14902, 0.172549, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+content_margin_top = 4.0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ouefj"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.105882, 0.101961, 0.090196, 1)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k0xcf"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.105882, 0.101961, 0.090196, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qa062"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.470588, 0.439216, 0.376471, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jknnu"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.105882, 0.101961, 0.090196, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+anti_aliasing = false
+
 [resource]
 default_font = ExtResource("1_5k2lq")
 default_font_size = 8
+Divider/base_type = &"HSeparator"
+Divider/constants/separation = 1
+Divider/styles/separator = SubResource("StyleBoxLine_5tknm")
 Label/colors/font_color = Color(0.105882, 0.101961, 0.090196, 1)
 MenuAccent/base_type = &"Label"
 MenuAccent/colors/font_color = Color(0.643137, 0.14902, 0.172549, 1)
@@ -12,6 +110,18 @@ MenuDisabled/base_type = &"Label"
 MenuDisabled/colors/font_color = Color(0.470588, 0.439216, 0.376471, 1)
 MenuRow/base_type = &"HBoxContainer"
 MenuRow/constants/separation = 7
+PotionSlot/base_type = &"PanelContainer"
+PotionSlot/styles/panel = SubResource("StyleBoxFlat_5k2lq")
+PotionSlotSelected/base_type = &"PanelContainer"
+PotionSlotSelected/styles/panel = SubResource("StyleBoxFlat_5k2lq")
+Prompt/base_type = &"PanelContainer"
+Prompt/styles/panel = SubResource("StyleBoxFlat_ouefj")
+RegionPanel/base_type = &"PanelContainer"
+RegionPanel/styles/panel = SubResource("StyleBoxFlat_k0xcf")
+RowPanel/base_type = &"PanelContainer"
+RowPanel/styles/panel = SubResource("StyleBoxFlat_qa062")
+ScreenFrame/base_type = &"PanelContainer"
+ScreenFrame/styles/panel = SubResource("StyleBoxFlat_jknnu")
 TitleText/base_type = &"Label"
 TitleText/colors/font_color = Color(0.643137, 0.14902, 0.172549, 1)
 TitleText/font_sizes/font_size = 16

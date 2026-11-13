@@ -105,6 +105,7 @@ size_flags_vertical = 0
 number = 1
 potion_id = &"skill"
 potion_name = "SKILL"
+liquid_color = Color(0.184314, 0.435294, 0.560784, 1)
 
 [node name="Potion2" parent="Screen/Margin/Layout/PotionsPanel/PotionsMargin/Potions" instance=ExtResource("3_mjja7")]
 layout_mode = 2
@@ -112,6 +113,7 @@ size_flags_vertical = 0
 number = 2
 potion_id = &"strength"
 potion_name = "STRENGTH"
+liquid_color = Color(0.721569, 0.262745, 0.184314, 1)
 
 [node name="Potion3" parent="Screen/Margin/Layout/PotionsPanel/PotionsMargin/Potions" instance=ExtResource("3_mjja7")]
 layout_mode = 2
@@ -119,6 +121,7 @@ size_flags_vertical = 0
 number = 3
 potion_id = &"fortune"
 potion_name = "FORTUNE"
+liquid_color = Color(0.309804, 0.541176, 0.235294, 1)
 
 [node name="KeysPanel" type="PanelContainer" parent="Screen/Margin/Layout"]
 custom_minimum_size = Vector2(0, 14)

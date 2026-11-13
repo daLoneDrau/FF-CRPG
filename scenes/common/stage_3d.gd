@@ -10,21 +10,25 @@ extends Control
 ## With no model the stage shows only its size_label (no placeholder art).
 ## Model assumptions:
 ##  - The root of the .glb is a Node3D.
-##  - For dice, face N is turned toward the camera by FACE_EULER_DEG[N - 1]. That
-##    matches a die modelled with 1 on +Z, 2 on +Y, 3 on +X, 4 on -X, 5 on -Y and
-##    6 on -Z. If the Blender model differs, edit the table.
+##  - The model has an inverted-hull outline mesh named "border". Its thickness in the
+##    .glb is far below one screen pixel at these sizes, so Stage3D rescales it to
+##    outline_pixels (see _layout). Without a "border" node the outline is skipped.
+##  - For dice, face N is turned toward the camera by FACE_EULER_DEG[N - 1]. The table
+##    was measured from dice.glb by counting pips at each rotation. If the model
+##    changes, re-measure it.
 
 ## Emitted when tumble_to_face() finishes, with or without a model.
 signal settled
 
 ## Euler rotation (degrees) that turns each face toward the camera (+Z).
+## Measured from dice.glb: +Z is 3, +Y is 2, -Y is 5, +X is 1, -X is 6, -Z is 4.
 const FACE_EULER_DEG: Array[Vector3] = [
-	Vector3(0.0, 0.0, 0.0),     # 1: +Z
-	Vector3(90.0, 0.0, 0.0),    # 2: +Y
-	Vector3(0.0, -90.0, 0.0),   # 3: +X
-	Vector3(0.0, 90.0, 0.0),    # 4: -X
-	Vector3(-90.0, 0.0, 0.0),   # 5: -Y
-	Vector3(0.0, 180.0, 0.0),   # 6: -Z
+	Vector3(0.0, 90.0, 0.0),    # 1
+	Vector3(90.0, 0.0, 0.0),    # 2
+	Vector3(0.0, 0.0, 0.0),     # 3
+	Vector3(0.0, 180.0, 0.0),   # 4
+	Vector3(-90.0, 0.0, 0.0),   # 5
+	Vector3(0.0, -90.0, 0.0),   # 6
 ]
 
 ## The .glb (as a PackedScene) to show. Leave empty to show only the size label.
@@ -35,17 +39,23 @@ const FACE_EULER_DEG: Array[Vector3] = [
 @export_range(0.1, 1.0, 0.05) var fit_fraction: float = 0.75
 ## Length of a tumble. 0 skips the animation (a future reduce-motion setting).
 @export_range(0.0, 2.0, 0.05) var tumble_seconds: float = 0.5
+## Outline thickness in screen pixels. The "border" hull is scaled so it reaches this far
+## past the model on every side. 0 keeps the hull exactly as modelled.
+@export_range(0.0, 4.0, 0.25) var outline_pixels: float = 1.0
 
 @onready var _placeholder: Label = %Placeholder
 @onready var _pivot: Node3D = %Pivot
 @onready var _camera: Camera3D = %Camera
 
 var _current: Node3D
+var _hull: Node3D
+var _body_bounds: AABB
 var _tumble: Tween
 
 
 func _ready() -> void:
 	_placeholder.text = size_label
+	resized.connect(_layout)
 	if model != null:
 		set_model(model)
 
@@ -65,15 +75,37 @@ func set_model(packed: PackedScene) -> void:
 		push_warning("Stage3D: model root is not a Node3D.")
 		return
 	_pivot.add_child(node)
-	_fit(node)
 	_current = node
+	_hull = node.find_child("border", true, false) as Node3D
+	_body_bounds = _combined_aabb(node, _hull)
+	_layout()
 	_placeholder.hide()
+
+
+## Gives every surface of the mesh node called `node_name` this emission colour. The
+## surface material is duplicated first, so other stages sharing the .glb are unchanged.
+func tint_node(node_name: StringName, color: Color) -> void:
+	if _current == null:
+		return
+	var mesh := _current.find_child(node_name, true, false) as MeshInstance3D
+	if mesh == null:
+		push_warning("Stage3D: no mesh node named %s." % node_name)
+		return
+	for i in mesh.get_surface_override_material_count():
+		var material := mesh.get_active_material(i) as StandardMaterial3D
+		if material == null:
+			continue
+		var copy := material.duplicate() as StandardMaterial3D
+		copy.emission_enabled = true
+		copy.emission = color
+		mesh.set_surface_override_material(i, copy)
 
 
 func clear_model() -> void:
 	if _current != null:
 		_current.queue_free()
 		_current = null
+	_hull = null
 	_pivot.rotation_degrees = Vector3.ZERO
 	_placeholder.show()
 
@@ -100,27 +132,45 @@ func tumble_to_face(face: int) -> void:
 	_tumble.tween_callback(settled.emit)
 
 
-## Scales the model so its largest extent fits the stage, and centres it on the pivot
-## so a die turns about its own centre.
-func _fit(node: Node3D) -> void:
-	var bounds := _combined_aabb(node)
-	var largest := maxf(bounds.size.x, maxf(bounds.size.y, bounds.size.z))
-	if largest <= 0.0:
+## Fits the model body to the stage and centres it on the pivot, so a die turns about its
+## own centre. Runs on set_model() and again whenever the stage is resized, because the
+## final size is only known after the containers have laid it out.
+func _layout() -> void:
+	if _current == null:
 		return
-	var aspect := size.x / size.y if size.y > 0.0 else 1.0
+	var area := size if size.x > 0.0 and size.y > 0.0 else custom_minimum_size
+	var body := _body_bounds.size
+	var largest := maxf(body.x, maxf(body.y, body.z))
+	if area.x <= 0.0 or area.y <= 0.0 or largest <= 0.0:
+		return
 	var view_height := _camera.size
-	var limit := minf(view_height, view_height * aspect) * fit_fraction
+	var limit := minf(view_height, view_height * area.x / area.y) * fit_fraction
+	var centre := _body_bounds.get_center()
 	var factor := limit / largest
-	node.scale = Vector3.ONE * factor
-	node.position = -bounds.get_center() * factor
+	if _hull != null and outline_pixels > 0.0:
+		# One screen pixel is view_height / area.y world units. Reserve the outline's
+		# width on both sides, then grow the hull to reach exactly that far past the body.
+		var edge := outline_pixels * view_height / area.y
+		factor = maxf((limit - 2.0 * edge) / largest, 0.001)
+		var grow := edge / factor
+		var hull_scale := Vector3(
+				(body.x + 2.0 * grow) / maxf(body.x, 0.001),
+				(body.y + 2.0 * grow) / maxf(body.y, 0.001),
+				(body.z + 2.0 * grow) / maxf(body.z, 0.001))
+		_hull.transform = Transform3D(Basis.from_scale(hull_scale), centre * (Vector3.ONE - hull_scale))
+	_current.scale = Vector3.ONE * factor
+	_current.position = -centre * factor
 
 
-## Bounding box of every visual node under root, in root's local space.
-func _combined_aabb(root: Node3D) -> AABB:
+## Bounding box of every visual node under root, in root's local space. Nodes under
+## `exclude` (the outline hull) are left out.
+func _combined_aabb(root: Node3D, exclude: Node3D = null) -> AABB:
 	var to_local := root.global_transform.affine_inverse()
 	var result := AABB()
 	var first := true
 	for node in root.find_children("*", "VisualInstance3D", true, false):
+		if exclude != null and (node == exclude or exclude.is_ancestor_of(node)):
+			continue
 		var visual := node as VisualInstance3D
 		var box := (to_local * visual.global_transform) * visual.get_aabb()
 		result = box if first else result.merge(box)

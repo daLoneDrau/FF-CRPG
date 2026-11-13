@@ -16,8 +16,8 @@ signal chosen
 @export var potion_id: StringName = &""
 ## Text shown next to the number, for example "SKILL".
 @export var potion_name: String = ""
-## The potion's .glb. Leave empty until the model exists; the stage shows its size label.
-@export var stage_model: PackedScene
+## Emission colour of the liquid. Leave the alpha at 0 to keep the model's own colour.
+@export var liquid_color: Color = Color(0.0, 0.0, 0.0, 0.0)
 
 @onready var _stage: Stage3D = %Stage
 @onready var _cursor: Label = %Cursor
@@ -28,8 +28,9 @@ signal chosen
 func _ready() -> void:
 	_index.text = str(number)
 	_name.text = potion_name
-	if stage_model != null:
-		_stage.set_model(stage_model)
+	# The stage's own _ready has already loaded its model by now (children ready first).
+	if liquid_color.a > 0.0:
+		_stage.tint_node(&"liquid", liquid_color)
 	set_selected(false)
 
 

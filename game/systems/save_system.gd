@@ -11,6 +11,22 @@ const VERSION: int = 1
 const START_LOCATION: String = "start"
 
 
+## True when a save file exists.
+static func exists() -> bool:
+	return FileAccess.file_exists(SAVE_PATH)
+
+
+## Deletes the save file. Returns true when no save exists afterwards.
+static func erase() -> bool:
+	if not exists():
+		return true
+	var result := DirAccess.remove_absolute(SAVE_PATH)
+	if result != OK:
+		push_error("SaveSystem: could not delete %s (error %d)." % [SAVE_PATH, result])
+		return false
+	return true
+
+
 ## Writes the save. Returns false and logs an error if it could not be written.
 func write() -> bool:
 	var manager := get_entity_manager() as FFEntityManager

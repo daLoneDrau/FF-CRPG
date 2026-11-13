@@ -18,15 +18,15 @@ const PATH_NEW_GAME := "res://scenes/character_creation/character_creation.tscn"
 const SCENE_CONTINUE := "slot_select"
 const SCENE_SETTINGS := "settings"
 
-const SAVE_DIR := "user://saves"
-const SLOT_COUNT := 3
 const MESSAGE_SECONDS := 2.5
 const BLINK_SECONDS := 0.6
+
+const CONFIRM_MESSAGE := "A SAVED GAME EXISTS. STARTING ERASES IT."
 
 ## Node3D inside the diorama that the camera flies toward on New Game.
 const ENTRANCE_NODE := "dungeon_entrance"
 
-enum State { GATE, MENU, LEAVING }
+enum State { GATE, MENU, CONFIRM, LEAVING }
 enum Item { NEW_GAME, CONTINUE, SETTINGS }
 
 ## The imported .glb (as a PackedScene) shown on the stage. Leave empty to keep
@@ -58,6 +58,9 @@ var _cursor: int = Item.NEW_GAME
 var _rows: Array[Control] = []
 var _enabled: Array[bool] = [true, false, true]
 var _footer_text: String = ""
+## Menu row text as authored in the scene, restored after the erase prompt.
+var _row_index_text: Array[String] = []
+var _row_label_text: Array[String] = []
 var _blink: Tween
 var _flash_tween: Tween
 var _dolly: Tween
@@ -68,11 +71,16 @@ var _dolly: Tween
 ## GameEngine calls this after set_engine(), so _game_engine is valid here.
 func on_enter() -> void:
 	_footer_text = _footer.text
-	_enabled[Item.CONTINUE] = _has_any_save()
+	_enabled[Item.CONTINUE] = SaveSystem.exists()
 
 	_rows.clear()
+	_row_index_text.clear()
+	_row_label_text.clear()
 	for child in _menu.get_children():
 		_rows.append(child as Control)
+		var parts := child.get_children()
+		_row_index_text.append((parts[1] as Label).text)
+		_row_label_text.append((parts[2] as Label).text)
 	for i in _rows.size():
 		_wire_row(i)
 	_screen.gui_input.connect(_on_screen_gui_input)
@@ -112,6 +120,10 @@ func do_action(action: GameAction) -> void:
 			_activate(Item.CONTINUE)
 		"menu_item_2":
 			_activate(Item.SETTINGS)
+		"confirm_yes":
+			_confirm_erase()
+		"confirm_no":
+			_show_menu()
 
 
 func _on_screen_gui_input(event: InputEvent) -> void:
@@ -122,10 +134,10 @@ func _on_screen_gui_input(event: InputEvent) -> void:
 func _wire_row(index: int) -> void:
 	var row := _rows[index]
 	row.mouse_entered.connect(func() -> void:
-		if _state == State.MENU and _enabled[index]:
+		if (_state == State.MENU or _state == State.CONFIRM) and _enabled[index]:
 			_set_cursor(index))
 	row.gui_input.connect(func(event: InputEvent) -> void:
-		if _state == State.MENU and _is_left_click(event):
+		if (_state == State.MENU or _state == State.CONFIRM) and _is_left_click(event):
 			_activate(index))
 
 
@@ -156,6 +168,7 @@ func _show_menu() -> void:
 	if _blink:
 		_blink.kill()
 	_gate.hide()
+	_restore_menu()
 	_menu.show()
 
 	# Replaces the gate's any_key fallback, so stray keys do nothing now.
@@ -174,6 +187,48 @@ func _show_menu() -> void:
 	_set_cursor(Item.NEW_GAME)
 
 
+## Puts the three menu rows, the Continue state and the footer back to normal.
+func _restore_menu() -> void:
+	for i in _rows.size():
+		_set_row_text(i, _row_index_text[i], _row_label_text[i])
+		_rows[i].show()
+	_enabled[Item.NEW_GAME] = true
+	_enabled[Item.CONTINUE] = SaveSystem.exists()
+	_enabled[Item.SETTINGS] = true
+	if _flash_tween:
+		_flash_tween.kill()
+	_footer.text = _footer_text
+
+
+## Asks before New Game erases the existing save. The cursor starts on cancel.
+func _show_confirm() -> void:
+	_state = State.CONFIRM
+	_set_row_text(0, "Y", "- ERASE SAVE AND START")
+	_set_row_text(1, "N", "- CANCEL")
+	_rows[2].hide()
+	_enabled[Item.NEW_GAME] = true
+	_enabled[Item.CONTINUE] = true
+	_enabled[Item.SETTINGS] = false
+	if _flash_tween:
+		_flash_tween.kill()
+	_footer.text = CONFIRM_MESSAGE
+
+	clear_actions()
+	register_action("Up", "menu_up")
+	register_action("W", "menu_up")
+	register_action("Down", "menu_down")
+	register_action("S", "menu_down")
+	register_action("Enter", "menu_confirm")
+	register_action("Kp Enter", "menu_confirm")
+	register_action("Space", "menu_confirm")
+	register_action("Y", "confirm_yes")
+	register_action("N", "confirm_no")
+	register_action("Escape", "confirm_no")
+	register_action("Backspace", "confirm_no")
+
+	_set_cursor(1)
+
+
 # —— Menu ————————————————————————————————————————————————
 
 func _set_cursor(item: int) -> void:
@@ -188,6 +243,12 @@ func _move_cursor(step: int) -> void:
 		if _enabled[item]:
 			_set_cursor(item)
 			return
+
+
+func _set_row_text(row: int, index_text: String, label_text: String) -> void:
+	var parts := _rows[row].get_children()
+	(parts[1] as Label).text = index_text
+	(parts[2] as Label).text = label_text
 
 
 ## Row children, in order: Cursor, Index, Text.
@@ -205,25 +266,46 @@ func _refresh_rows() -> void:
 
 
 func _activate(item: int) -> void:
+	if _state == State.CONFIRM:
+		if item == 0:
+			_confirm_erase()
+		else:
+			_show_menu()
+		return
 	if not _enabled[item]:
 		_flash("NO SAVED GAME")
 		return
 	match item:
 		Item.NEW_GAME:
-			if _free_slot() == -1:
-				_flash("ALL SLOTS FULL - DELETE ONE FIRST")
-				return
+			# Check first, so a save is never erased for a scene that can't load.
 			if not _can_go(SCENE_NEW_GAME, PATH_NEW_GAME):
 				_flash("NOT BUILT YET")
 				return
-			new_game_requested.emit()
-			_enter_cave(func() -> void: _go(SCENE_NEW_GAME, PATH_NEW_GAME))
+			if SaveSystem.exists():
+				_show_confirm()
+			else:
+				_start_new_game()
 		Item.CONTINUE:
 			continue_requested.emit()
 			_go(SCENE_CONTINUE)
 		Item.SETTINGS:
 			settings_requested.emit()
 			_go(SCENE_SETTINGS, "", true)
+
+
+## The player agreed to erase the save. Deletes it, then starts the new game.
+func _confirm_erase() -> void:
+	if not SaveSystem.erase():
+		_show_menu()
+		_flash("COULD NOT ERASE SAVE")
+		return
+	_show_menu()
+	_start_new_game()
+
+
+func _start_new_game() -> void:
+	new_game_requested.emit()
+	_enter_cave(func() -> void: _go(SCENE_NEW_GAME, PATH_NEW_GAME))
 
 
 ## True when the engine can load scene_key: the file exists (if a path is
@@ -289,27 +371,6 @@ func _flash(text: String) -> void:
 	_flash_tween = create_tween()
 	_flash_tween.tween_interval(MESSAGE_SECONDS)
 	_flash_tween.tween_callback(func() -> void: _footer.text = _footer_text)
-
-
-# —— Saves (probe only; the save service comes later) ————————
-
-func _slot_path(slot: int) -> String:
-	return "%s/slot_%d.json" % [SAVE_DIR, slot]
-
-
-func _has_any_save() -> bool:
-	for slot in range(1, SLOT_COUNT + 1):
-		if FileAccess.file_exists(_slot_path(slot)):
-			return true
-	return false
-
-
-## First empty slot (1-based), or -1 when all are full.
-func _free_slot() -> int:
-	for slot in range(1, SLOT_COUNT + 1):
-		if not FileAccess.file_exists(_slot_path(slot)):
-			return slot
-	return -1
 
 
 # —— Stage (animated .glb) ———————————————————————————————

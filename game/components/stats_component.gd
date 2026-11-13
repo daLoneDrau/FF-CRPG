@@ -1,7 +1,5 @@
 class_name StatsComponent
 extends EntityComponent
-
-
 ## SKILL, STAMINA and LUCK for the adventurer, each kept as an Initial value
 ## (rolled at Character Creation, never changes) and a Current value (what the
 ## game changes). Nothing here is modified by equipment, spells or statuses.
@@ -46,9 +44,17 @@ func set_current(stat: StringName, value: int) -> void:
 func to_dict() -> Dictionary:
 	return {
 		"key": get_class_name(),
-		"initial": {SKILL: initial[SKILL], STAMINA: initial[STAMINA], LUCK: initial[LUCK]},
-		"current": {SKILL: current[SKILL], STAMINA: current[STAMINA], LUCK: current[LUCK]},
+		"initial": _to_plain(initial),
+		"current": _to_plain(current),
 	}
+
+
+## JSON needs String keys, so the StringName keys are converted.
+func _to_plain(stats: Dictionary[StringName, int]) -> Dictionary:
+	var out := {}
+	for stat in stats:
+		out[String(stat)] = stats[stat]
+	return out
 
 
 func from_dict(data: Dictionary) -> void:

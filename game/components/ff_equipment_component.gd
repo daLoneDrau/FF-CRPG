@@ -12,3 +12,14 @@ func _init() -> void:
 		EquipmentSlot.to_key(EquipmentSlot.Enum.CHEST),
 		EquipmentSlot.to_key(EquipmentSlot.Enum.BELT),
 	])
+
+
+func to_dict() -> Dictionary:
+	var equipped := {}
+	for slot: int in slots:
+		equipped[str(slot)] = slots[slot]
+	return {
+		"key": get_class_name(),
+		"enabled": enabled,
+		"slots": equipped,
+	}

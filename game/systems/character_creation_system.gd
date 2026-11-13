@@ -4,7 +4,7 @@ extends GameSystem
 ##
 ## Subscribes to the scene's `accepted` signal through the Switchboard and asks
 ## the entity manager's factory to build the adventurer from the result, then
-## equips the starting items.
+## equips the starting items and writes the save.
 
 
 func _on_ready() -> void:
@@ -17,8 +17,8 @@ func _exit_tree() -> void:
 
 
 ## result: {"skill", "stamina", "luck", "skill_dice", "stamina_dice", "luck_dice", "potion"}
-## Creates the adventurer and its items, then equips the items through the scene's
-## FFEquipmentSystem.
+## Creates the adventurer and its items, equips the items through the scene's
+## FFEquipmentSystem, then writes the save through SaveSystem.
 func _on_accepted(result: Dictionary) -> void:
 	var manager := get_entity_manager() as FFEntityManager
 	if manager == null:
@@ -35,6 +35,12 @@ func _on_accepted(result: Dictionary) -> void:
 	for item: Entity in made["items"]:
 		if not equipment.equip(StringName(adventurer.id), StringName(item.id)):
 			push_error("CharacterCreationSystem: could not equip item %s." % item.id)
+
+	var save := get_system(&"SaveSystem") as SaveSystem
+	if save == null:
+		push_error("CharacterCreationSystem: the scene has no SaveSystem.")
+		return
+	save.write()
 
 
 func _on_initialize() -> void:

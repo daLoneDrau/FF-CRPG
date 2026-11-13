@@ -84,6 +84,67 @@ func create_item(item_name: String) -> Entity:
 	return e
 
 
+# —— Serialization ———————————————————————————————————————————
+
+## Every entity with its id, tags and components, as plain JSON-safe data.
+## Overrides the library version, which keys every component by the engine class name.
+func to_dict() -> Dictionary:
+	var out: Array = []
+	for id: String in entities:
+		var e: Entity = entities[id]
+		var components := {}
+		var held := e.get_components()
+		for key: StringName in held:
+			components[String(key)] = _component_to_dict(held[key])
+		out.append({
+			"id": id,
+			"tags": e.tags.get_mask(),
+			"alive": e.alive,
+			"active": e.active,
+			"components": components,
+		})
+	return {"entities": out}
+
+
+## The library's InventoryComponent and WalletComponent have no to_dict of their own
+## (the base one saves only "enabled"), so their state is written here.
+func _component_to_dict(c: EntityComponent) -> Dictionary:
+	if c is InventoryComponent:
+		var inventory := c as InventoryComponent
+		var slot_list: Array = []
+		for slot in inventory.slots:
+			if slot is InventorySlot:
+				slot_list.append({
+					"entity_id": slot.entity_id,
+					"quantity": slot.quantity,
+					"index": slot.index,
+					"visible": slot.visible,
+				})
+			else:
+				slot_list.append(null)
+		return {
+			"key": c.get_class_name(),
+			"enabled": c.enabled,
+			"capacity": inventory.capacity,
+			"label": inventory.label,
+			"slots": slot_list,
+		}
+	if c is WalletComponent:
+		var wallet := c as WalletComponent
+		return {
+			"key": c.get_class_name(),
+			"enabled": c.enabled,
+			"gold": wallet.gold,
+			"silver": wallet.silver,
+			"copper": wallet.copper,
+			"gems_value": wallet.gems_value,
+			"trade_credits": wallet.trade_credits,
+			"total_earned": wallet.total_earned,
+			"total_spent": wallet.total_spent,
+		}
+	return c.to_dict()
+
+
 # —— EntityManager abstract API ——————————————————————————————
 
 func is_pc(e: Entity) -> bool:

@@ -1,0 +1,193 @@
+[gd_scene format=3 uid="uid://dgy4jn7nds4dx"]
+
+[ext_resource type="Script" uid="uid://se7tvcnio5r0" path="res://scenes/character_creation/character_creation_scene.gd" id="1_5w2ck"]
+[ext_resource type="PackedScene" uid="uid://i4q5fscv4ktx" path="res://scenes/character_creation/stat_column.tscn" id="2_4xea1"]
+[ext_resource type="PackedScene" uid="uid://b8oh642icqtid" path="res://scenes/character_creation/potion_column.tscn" id="3_mjja7"]
+
+[node name="CharacterCreation" type="Node" unique_id=1303617521]
+script = ExtResource("1_5w2ck")
+
+[node name="Screen" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Paper" type="ColorRect" parent="Screen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.937255, 0.901961, 0.811765, 1)
+
+[node name="Margin" type="MarginContainer" parent="Screen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 6
+
+[node name="Layout" type="VBoxContainer" parent="Screen/Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="TitleLabel" type="Label" parent="Screen/Margin/Layout"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_type_variation = &"TitleText"
+text = "CHARACTER CREATION"
+horizontal_alignment = 1
+
+[node name="StatsPanel" type="PanelContainer" parent="Screen/Margin/Layout"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"RegionPanel"
+
+[node name="Stats" type="HBoxContainer" parent="Screen/Margin/Layout/StatsPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="SkillColumn" parent="Screen/Margin/Layout/StatsPanel/Stats" instance=ExtResource("2_4xea1")]
+unique_name_in_owner = true
+layout_mode = 2
+heading = "SKILL"
+dice_count = 1
+bonus = 6
+
+[node name="StaminaColumn" parent="Screen/Margin/Layout/StatsPanel/Stats" instance=ExtResource("2_4xea1")]
+unique_name_in_owner = true
+layout_mode = 2
+heading = "STAMINA"
+dice_count = 2
+bonus = 12
+
+[node name="LuckColumn" parent="Screen/Margin/Layout/StatsPanel/Stats" instance=ExtResource("2_4xea1")]
+unique_name_in_owner = true
+layout_mode = 2
+heading = "LUCK"
+dice_count = 1
+bonus = 6
+
+[node name="PotionsPanel" type="PanelContainer" parent="Screen/Margin/Layout"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"RegionPanel"
+
+[node name="PotionsMargin" type="MarginContainer" parent="Screen/Margin/Layout/PotionsPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_top = 4
+
+[node name="Potions" type="HBoxContainer" parent="Screen/Margin/Layout/PotionsPanel/PotionsMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="Potion1" parent="Screen/Margin/Layout/PotionsPanel/PotionsMargin/Potions" instance=ExtResource("3_mjja7")]
+layout_mode = 2
+size_flags_vertical = 0
+number = 1
+potion_id = &"skill"
+potion_name = "SKILL"
+
+[node name="Potion2" parent="Screen/Margin/Layout/PotionsPanel/PotionsMargin/Potions" instance=ExtResource("3_mjja7")]
+layout_mode = 2
+size_flags_vertical = 0
+number = 2
+potion_id = &"strength"
+potion_name = "STRENGTH"
+
+[node name="Potion3" parent="Screen/Margin/Layout/PotionsPanel/PotionsMargin/Potions" instance=ExtResource("3_mjja7")]
+layout_mode = 2
+size_flags_vertical = 0
+number = 3
+potion_id = &"fortune"
+potion_name = "FORTUNE"
+
+[node name="KeysPanel" type="PanelContainer" parent="Screen/Margin/Layout"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"RegionPanel"
+
+[node name="KeysMargin" type="MarginContainer" parent="Screen/Margin/Layout/KeysPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 4
+
+[node name="CommandBar" type="HBoxContainer" parent="Screen/Margin/Layout/KeysPanel/KeysMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="CmdRoll" type="HBoxContainer" parent="Screen/Margin/Layout/KeysPanel/KeysMargin/CommandBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"MenuRow"
+
+[node name="Key" type="Label" parent="Screen/Margin/Layout/KeysPanel/KeysMargin/CommandBar/CmdRoll"]
+layout_mode = 2
+theme_type_variation = &"MenuAccent"
+text = "R"
+
+[node name="Text" type="Label" parent="Screen/Margin/Layout/KeysPanel/KeysMargin/CommandBar/CmdRoll"]
+layout_mode = 2
+text = "- ROLL AGAIN"
+
+[node name="CmdBack" type="HBoxContainer" parent="Screen/Margin/Layout/KeysPanel/KeysMargin/CommandBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"MenuRow"
+alignment = 1
+
+[node name="Key" type="Label" parent="Screen/Margin/Layout/KeysPanel/KeysMargin/CommandBar/CmdBack"]
+layout_mode = 2
+theme_type_variation = &"MenuAccent"
+text = "BKSP"
+
+[node name="Text" type="Label" parent="Screen/Margin/Layout/KeysPanel/KeysMargin/CommandBar/CmdBack"]
+layout_mode = 2
+text = "- BACK"
+
+[node name="CmdAccept" type="HBoxContainer" parent="Screen/Margin/Layout/KeysPanel/KeysMargin/CommandBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"MenuRow"
+alignment = 2
+
+[node name="Key" type="Label" parent="Screen/Margin/Layout/KeysPanel/KeysMargin/CommandBar/CmdAccept"]
+layout_mode = 2
+theme_type_variation = &"MenuAccent"
+text = "ENTER"
+
+[node name="Text" type="Label" parent="Screen/Margin/Layout/KeysPanel/KeysMargin/CommandBar/CmdAccept"]
+layout_mode = 2
+text = "- ACCEPT"
+
+[node name="Message" type="Label" parent="Screen/Margin/Layout/KeysPanel/KeysMargin"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+horizontal_alignment = 1

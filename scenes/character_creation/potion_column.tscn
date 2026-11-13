@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://b8oh642icqtid"]
+
+[ext_resource type="Script" uid="uid://daklm2pbm6fs" path="res://scenes/character_creation/potion_column.gd" id="1_dvj3d"]
+[ext_resource type="PackedScene" uid="uid://bnvwhxo6ok8je" path="res://scenes/common/stage_3d.tscn" id="2_28c16"]
+
+[node name="PotionColumn" type="PanelContainer" unique_id=2004935767]
+custom_minimum_size = Vector2(100, 0)
+theme_type_variation = &"PotionSlot"
+script = ExtResource("1_dvj3d")
+
+[node name="Content" type="VBoxContainer" parent="." unique_id=1506662380]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 1
+
+[node name="Stage3d" parent="Content" unique_id=928942580 instance=ExtResource("2_28c16")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+size_label = "40x32"
+fit_fraction = 0.9
+
+[node name="Row" type="HBoxContainer" parent="Content" unique_id=1506109968]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"MenuRow"
+alignment = 1
+
+[node name="Cursor" type="Label" parent="Content/Row" unique_id=37670307]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+theme_type_variation = &"MenuAccent"
+text = ">"
+
+[node name="Index" type="Label" parent="Content/Row" unique_id=1624194236]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuAccent"
+
+[node name="Name" type="Label" parent="Content/Row" unique_id=547494642]
+unique_name_in_owner = true
+layout_mode = 2

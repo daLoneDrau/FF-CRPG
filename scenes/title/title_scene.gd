@@ -23,7 +23,10 @@ const SLOT_COUNT := 3
 const MESSAGE_SECONDS := 2.5
 const BLINK_SECONDS := 0.6
 
-enum State { GATE, MENU }
+## Node3D inside the diorama that the camera flies toward on New Game.
+const ENTRANCE_NODE := "dungeon_entrance"
+
+enum State { GATE, MENU, LEAVING }
 enum Item { NEW_GAME, CONTINUE, SETTINGS }
 
 ## The imported .glb (as a PackedScene) shown on the stage. Leave empty to keep
@@ -33,10 +36,20 @@ enum Item { NEW_GAME, CONTINUE, SETTINGS }
 @export var auto_fit: bool = true
 @export var fit_size: Vector3 = Vector3(8.0, 2.2, 3.0)
 
+@export_group("Cave dolly")
+## Seconds the camera takes to move into the cave when New Game is chosen.
+@export var dolly_seconds: float = 1.0
+## Perspective camera: how close to the entrance the camera stops (scene units).
+@export var dolly_stop_distance: float = 0.3
+## Orthographic camera: final view size as a fraction of the starting size
+## (smaller means closer). An orthographic camera can't dolly, so it pans and zooms.
+@export_range(0.05, 1.0) var dolly_ortho_zoom: float = 0.2
+
 @onready var _screen: Control = %Screen
 @onready var _footer: Label = %Footer
 @onready var _placeholder: Control = %StagePlaceholder
 @onready var _anchor: Node3D = %StageAnchor
+@onready var _camera: Camera3D = %StageCamera
 @onready var _gate: Label = %GatePrompt
 @onready var _menu: Control = %MenuList
 
@@ -47,6 +60,7 @@ var _enabled: Array[bool] = [true, false, true]
 var _footer_text: String = ""
 var _blink: Tween
 var _flash_tween: Tween
+var _dolly: Tween
 
 
 # —— Lifecycle ———————————————————————————————————————————
@@ -73,6 +87,8 @@ func on_exit() -> void:
 		_blink.kill()
 	if _flash_tween:
 		_flash_tween.kill()
+	if _dolly:
+		_dolly.kill()
 
 
 # —— Input ———————————————————————————————————————————————
@@ -197,8 +213,11 @@ func _activate(item: int) -> void:
 			if _free_slot() == -1:
 				_flash("ALL SLOTS FULL - DELETE ONE FIRST")
 				return
+			if not _can_go(SCENE_NEW_GAME, PATH_NEW_GAME):
+				_flash("NOT BUILT YET")
+				return
 			new_game_requested.emit()
-			_go(SCENE_NEW_GAME, PATH_NEW_GAME)
+			_enter_cave(func() -> void: _go(SCENE_NEW_GAME, PATH_NEW_GAME))
 		Item.CONTINUE:
 			continue_requested.emit()
 			_go(SCENE_CONTINUE)
@@ -207,18 +226,59 @@ func _activate(item: int) -> void:
 			_go(SCENE_SETTINGS, "", true)
 
 
+## True when the engine can load scene_key: the file exists (if a path is
+## given) or the key is already registered.
+func _can_go(scene_key: String, scene_path: String = "") -> bool:
+	if _game_engine == null:
+		return false
+	if scene_path != "":
+		return ResourceLoader.exists(scene_path)
+	return _game_engine.scenes.has(scene_key)
+
+
 ## Asks the engine to load scene_key. If scene_path is given, the engine
 ## registers the key on first use; otherwise the key must already be registered.
 func _go(scene_key: String, scene_path: String = "", as_overlay: bool = false) -> void:
-	var known := ResourceLoader.exists(scene_path) if scene_path != "" \
-		else (_game_engine != null and _game_engine.scenes.has(scene_key))
-	if _game_engine == null or not known:
+	if not _can_go(scene_key, scene_path):
 		_flash("NOT BUILT YET")
 		return
 	if as_overlay:
 		_game_engine.push_scene(scene_key, scene_path)
 	else:
 		_game_engine.change_scene(scene_key, scene_path)
+
+
+## Flies the stage camera into the diorama's entrance, then calls on_done.
+## Input is locked while it runs. With no entrance node, on_done runs at once.
+func _enter_cave(on_done: Callable) -> void:
+	_state = State.LEAVING
+	clear_actions()
+
+	var entrance := _anchor.find_child(ENTRANCE_NODE, true, false) as Node3D
+	if entrance == null or _camera == null:
+		push_warning("TitleScene: '%s' not found, skipping the dolly." % ENTRANCE_NODE)
+		on_done.call()
+		return
+
+	var cam_pos := _camera.global_position
+	var cam_basis := _camera.global_transform.basis
+	var to_target := entrance.global_position - cam_pos
+	var end_pos: Vector3
+
+	_dolly = create_tween().set_parallel(true)
+	_dolly.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+
+	if _camera.projection == Camera3D.PROJECTION_ORTHOGONAL:
+		# Moving along the view axis changes nothing in an orthographic view,
+		# so slide sideways until the entrance is centred and shrink the view.
+		var local := cam_basis.inverse() * to_target
+		end_pos = cam_pos + cam_basis * Vector3(local.x, local.y, 0.0)
+		_dolly.tween_property(_camera, "size", _camera.size * dolly_ortho_zoom, dolly_seconds)
+	else:
+		end_pos = entrance.global_position - to_target.normalized() * dolly_stop_distance
+
+	_dolly.tween_property(_camera, "global_position", end_pos, dolly_seconds)
+	_dolly.chain().tween_callback(on_done)
 
 
 ## Shows a message in the footer line, then restores the tagline.

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://d1vep8ty2pft0" path="res://scenes/character_creation/stat_column.gd" id="1_alp6h"]
 [ext_resource type="PackedScene" uid="uid://bnvwhxo6ok8je" path="res://scenes/common/stage_3d.tscn" id="2_847us"]
+[ext_resource type="PackedScene" uid="uid://co6pnfydc2khy" path="res://assets/art/models/dice.glb" id="3_jacak"]
 
 [node name="StatColumn" type="MarginContainer" unique_id=1049964521]
 size_flags_horizontal = 3
@@ -44,12 +45,14 @@ theme_override_constants/separation = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
+model = ExtResource("3_jacak")
 size_label = "16"
 
 [node name="Die2" parent="Column/Body/Row/Dice" unique_id=1739787325 instance=ExtResource("2_847us")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
+model = ExtResource("3_jacak")
 size_label = "16"
 
 [node name="Text" type="MarginContainer" parent="Column/Body/Row" unique_id=1192955759]

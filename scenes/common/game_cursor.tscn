@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://chewvuuox3mrh"]
+
+[ext_resource type="Script" uid="uid://bpxjjoiqg70ee" path="res://scenes/common/game_cursor.gd" id="1_hmm46"]
+[ext_resource type="Shader" uid="uid://c34gds0ecr00g" path="res://scenes/common/shader_inverse.gdshader" id="2_4giil"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4giil"]
+shader = ExtResource("2_4giil")
+
+[node name="GameCursor" type="CanvasLayer" unique_id=2049338904]
+layer = 128
+script = ExtResource("1_hmm46")
+
+[node name="Block" type="ColorRect" parent="." unique_id=659754963]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_4giil")
+offset_right = 6.0
+offset_bottom = 8.0
+mouse_filter = 2

@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 Switchboard_auto="*res://addons/gdeng/daLoneDrau-GDEng-ECS/services/switchboard.gd"
 DiceTower_auto="*res://addons/gdeng/daLoneDrau-GDEng-ECS/services/dice_tower.gd"
 FFEngine_auto="*res://game/engine/ff_engine.gd"
+Cursor_auto="*res://scenes/common/game_cursor.tscn"
 
 [display]
 

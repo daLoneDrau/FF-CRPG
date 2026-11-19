@@ -1,0 +1,305 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/prologue/prologue_scene.gd" id="1_prologue"]
+[ext_resource type="PackedScene" path="res://scenes/common/stage_3d.tscn" id="2_stage"]
+
+[node name="Prologue" type="Node"]
+script = ExtResource("1_prologue")
+
+[node name="Screen" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Paper" type="ColorRect" parent="Screen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.937255, 0.901961, 0.811765, 1)
+
+[node name="Margin" type="MarginContainer" parent="Screen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="Layout" type="VBoxContainer" parent="Screen/Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Art" type="Control" parent="Screen/Margin/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="StageArea" type="Control" parent="Screen/Margin/Layout/Art"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="StageView" parent="Screen/Margin/Layout/Art/StageArea" instance=ExtResource("2_stage")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_right = 0.0
+offset_bottom = 0.0
+size_label = "306X90"
+
+[node name="StageFrame" type="ReferenceRect" parent="Screen/Margin/Layout/Art/StageArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+border_width = 1.0
+editor_only = false
+border_color = Color(0.105882, 0.101961, 0.090196, 1)
+
+[node name="CarouselArea" type="HBoxContainer" parent="Screen/Margin/Layout/Art"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 7
+
+[node name="Cell1" type="VBoxContainer" parent="Screen/Margin/Layout/Art/CarouselArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 1
+
+[node name="Panel" type="Control" parent="Screen/Margin/Layout/Art/CarouselArea/Cell1"]
+custom_minimum_size = Vector2(98, 54)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="View" parent="Screen/Margin/Layout/Art/CarouselArea/Cell1/Panel" instance=ExtResource("2_stage")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_right = 0.0
+offset_bottom = 0.0
+size_label = "98X54"
+
+[node name="Frame1" type="ReferenceRect" parent="Screen/Margin/Layout/Art/CarouselArea/Cell1/Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+border_width = 1.0
+editor_only = false
+border_color = Color(0.105882, 0.101961, 0.090196, 1)
+
+[node name="PanelCaption1" type="Label" parent="Screen/Margin/Layout/Art/CarouselArea/Cell1"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Cell2" type="VBoxContainer" parent="Screen/Margin/Layout/Art/CarouselArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 1
+
+[node name="Panel" type="Control" parent="Screen/Margin/Layout/Art/CarouselArea/Cell2"]
+custom_minimum_size = Vector2(98, 54)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="View" parent="Screen/Margin/Layout/Art/CarouselArea/Cell2/Panel" instance=ExtResource("2_stage")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_right = 0.0
+offset_bottom = 0.0
+size_label = "98X54"
+
+[node name="Frame2" type="ReferenceRect" parent="Screen/Margin/Layout/Art/CarouselArea/Cell2/Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+border_width = 1.0
+editor_only = false
+border_color = Color(0.105882, 0.101961, 0.090196, 1)
+
+[node name="PanelCaption2" type="Label" parent="Screen/Margin/Layout/Art/CarouselArea/Cell2"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Cell3" type="VBoxContainer" parent="Screen/Margin/Layout/Art/CarouselArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 1
+
+[node name="Panel" type="Control" parent="Screen/Margin/Layout/Art/CarouselArea/Cell3"]
+custom_minimum_size = Vector2(98, 54)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="View" parent="Screen/Margin/Layout/Art/CarouselArea/Cell3/Panel" instance=ExtResource("2_stage")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_right = 0.0
+offset_bottom = 0.0
+size_label = "98X54"
+
+[node name="Frame3" type="ReferenceRect" parent="Screen/Margin/Layout/Art/CarouselArea/Cell3/Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+border_width = 1.0
+editor_only = false
+border_color = Color(0.105882, 0.101961, 0.090196, 1)
+
+[node name="PanelCaption3" type="Label" parent="Screen/Margin/Layout/Art/CarouselArea/Cell3"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="TextPanel" type="PanelContainer" parent="Screen/Margin/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"RegionPanel"
+
+[node name="TextMargin" type="MarginContainer" parent="Screen/Margin/Layout/TextPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 1
+
+[node name="TextBox" type="VBoxContainer" parent="Screen/Margin/Layout/TextPanel/TextMargin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Caption" type="Label" parent="Screen/Margin/Layout/TextPanel/TextMargin/TextBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuAccent"
+
+[node name="Body" type="Label" parent="Screen/Margin/Layout/TextPanel/TextMargin/TextBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/line_spacing = 3
+autowrap_mode = 3
+
+[node name="Spacer" type="Control" parent="Screen/Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Commands" type="MarginContainer" parent="Screen/Margin/Layout"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_right = 4
+
+[node name="CommandBar" type="HBoxContainer" parent="Screen/Margin/Layout/Commands"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="CmdNext" type="HBoxContainer" parent="Screen/Margin/Layout/Commands/CommandBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"MenuRow"
+
+[node name="Key" type="Label" parent="Screen/Margin/Layout/Commands/CommandBar/CmdNext"]
+layout_mode = 2
+theme_type_variation = &"MenuAccent"
+text = "SPACE"
+
+[node name="Text" type="Label" parent="Screen/Margin/Layout/Commands/CommandBar/CmdNext"]
+layout_mode = 2
+text = "- NEXT"
+
+[node name="CmdSkip" type="HBoxContainer" parent="Screen/Margin/Layout/Commands/CommandBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"MenuRow"
+alignment = 1
+
+[node name="Key" type="Label" parent="Screen/Margin/Layout/Commands/CommandBar/CmdSkip"]
+layout_mode = 2
+theme_type_variation = &"MenuAccent"
+text = "S"
+
+[node name="Text" type="Label" parent="Screen/Margin/Layout/Commands/CommandBar/CmdSkip"]
+layout_mode = 2
+text = "- SKIP"
+
+[node name="Counter" type="Label" parent="Screen/Margin/Layout/Commands/CommandBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "1/12"
+horizontal_alignment = 2
+
+[node name="Message" type="Label" parent="Screen/Margin/Layout/Commands"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+horizontal_alignment = 1

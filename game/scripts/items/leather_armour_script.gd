@@ -1,6 +1,6 @@
-class_name LanternScript
+class_name LeatherArmourScript
 extends EntityScript
-## Script for the LANTERN. On INITIALIZED it names the item and sets the equip_slots of the
+## Script for the LEATHER ARMOUR. On INITIALIZED it names the item and sets the equip_slots of the
 ## parent entity's ItemComponent, which is what the equipment system reads.
 
 var _entity_manager: EntityManager
@@ -13,8 +13,8 @@ func on_attach(p_entity_id: StringName, p_entity_manager: EntityManager) -> void
 
 func on_initialized(_ctx: Dictionary) -> Dictionary:
 	var named := _entity_manager.get_component(entity_id, NameComponent) as NameComponent
-	named.display_name = "LANTERN"
+	named.display_name = "LEATHER ARMOUR"
 	var item := _entity_manager.get_component(entity_id, ItemComponent) as ItemComponent
-	item.item_name = "LANTERN"
-	item.equip_slots.assign([EquipmentSlot.Enum.BELT])
+	item.item_name = "LEATHER ARMOUR"
+	item.equip_slots.assign([EquipmentSlot.Enum.CHEST])
 	return {}

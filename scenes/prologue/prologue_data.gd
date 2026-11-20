@@ -16,10 +16,21 @@ const CAROUSEL_CAPTIONS: Array[String] = ["THE PLEA", "ANVIL", "RUMOURS"]
 ## caption: red line at the top of the text panel. Stage beats only.
 ## panel:   index of the highlighted carousel panel. Carousel beats only.
 ## screens: the text, one entry per screen.
+## diorama: optional. The .glb and its camera, with the numbers copied from Blender's N panel
+##          (see DioramaView). Beats without one show the art area's size label.
 const BEATS: Array[Dictionary] = [
 	{
 		"layout": STAGE,
 		"caption": "THE OLD MAN",
+		"diorama": {
+			"model": "res://assets/art/models/dioramas/pagan_plain.glb",
+			"cam_location": Vector3(0.0, -6.8151, 1.1805),
+			"cam_rotation": Vector3(85.2, 0.0, 0.0),
+			# Visible height in metres. Estimated from the 306x90 Blender test render (the
+			# cart spans about 63 px per metre), not read from the camera. Check it against
+			# the camera's Ortho Scale.
+			"cam_size": 1.42,
+		},
 		"screens": [
 			"WANDERING THE PAGAN PLAIN, YOU MEET AN OLD MAN PUSHING A LADEN HANDCART. YOU TELL HIM YOU ARE AN ADVENTURER, NOT A ROBBER.",
 			"HE SMILES. \"THEN PERHAPS YOU OUGHT TO VISIT MY VILLAGE. WE ARE WORRIED BY STRANGE TALES FROM FIRETOP MOUNTAIN, TWO DAYS' WALK EAST.\"",
@@ -63,8 +74,9 @@ const BEATS: Array[Dictionary] = [
 
 
 ## Flattens the beats into one entry per screen:
-## {"layout": String, "beat": int, "caption": String, "panel": int, "text": String}.
-## `panel` is -1 for stage screens.
+## {"layout": String, "beat": int, "caption": String, "panel": int, "text": String,
+##  "diorama": Dictionary}.
+## `panel` is -1 for stage screens. `diorama` is empty when the beat has none.
 static func build_screens() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for beat_index in BEATS.size():
@@ -75,6 +87,7 @@ static func build_screens() -> Array[Dictionary]:
 				"beat": beat_index,
 				"caption": beat.get("caption", ""),
 				"panel": beat.get("panel", -1),
+				"diorama": beat.get("diorama", {}),
 				"text": text,
 			})
 	return result

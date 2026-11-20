@@ -36,6 +36,7 @@ const CAROUSEL_TEXT_HEIGHT := 84.0
 @onready var _screen: Control = %Screen
 @onready var _art: Control = %Art
 @onready var _stage_area: Control = %StageArea
+@onready var _stage_view: DioramaView = %StageView
 @onready var _carousel_area: Control = %CarouselArea
 @onready var _text_panel: Control = %TextPanel
 @onready var _caption: Label = %Caption
@@ -157,7 +158,11 @@ func _show_screen(index: int) -> void:
 	_caption.visible = is_stage
 	_caption.text = data["caption"]
 	_body.text = data["text"]
-	if not is_stage:
+	if is_stage:
+		# Reloads only when the beat changes. A beat with no diorama shows the size label.
+		var diorama: Dictionary = data["diorama"]
+		_stage_view.show_diorama(diorama.get("model", ""), diorama)
+	else:
 		_highlight_panel(data["panel"])
 
 	_counter.text = "%d/%d" % [index + 1, _screens.size()]

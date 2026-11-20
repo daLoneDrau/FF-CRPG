@@ -1,11 +1,20 @@
-extends Node
+class_name LanternScript
+extends EntityScript
+## Script for the LANTERN. On INITIALIZED it names the item and sets the equip_slots of the
+## parent entity's ItemComponent, which is what the equipment system reads.
+
+var _entity_manager: EntityManager
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
+func on_attach(p_entity_id: StringName, p_entity_manager: EntityManager) -> void:
+	super(p_entity_id, p_entity_manager)
+	_entity_manager = p_entity_manager
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+func on_initialized(_ctx: Dictionary) -> Dictionary:
+	var named := _entity_manager.get_component(entity_id, NameComponent) as NameComponent
+	named.display_name = "LANTERN"
+	var item := _entity_manager.get_component(entity_id, ItemComponent) as ItemComponent
+	item.item_name = "LANTERN"
+	item.equip_slots.assign([EquipmentSlot.Enum.BELT])
+	return {}

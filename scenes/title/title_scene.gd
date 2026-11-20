@@ -331,10 +331,12 @@ func _go(scene_key: String, scene_path: String = "", as_overlay: bool = false) -
 
 
 ## Flies the stage camera into the diorama's entrance, then calls on_done.
-## Input is locked while it runs. With no entrance node, on_done runs at once.
+## The menu is hidden and input is locked while it runs. With no entrance node,
+## on_done runs at once.
 func _enter_cave(on_done: Callable) -> void:
 	_state = State.LEAVING
 	clear_actions()
+	_menu.hide()
 
 	var entrance := _anchor.find_child(ENTRANCE_NODE, true, false) as Node3D
 	if entrance == null or _camera == null:
